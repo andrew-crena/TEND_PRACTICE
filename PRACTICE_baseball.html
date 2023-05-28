@@ -419,7 +419,83 @@ View(noNA_baseball)
 
 # Let&#39;s combine these two conditions for our next subset, just to show how specialized you can make your calls for subsetting
 new_baseball &lt;- baseball_data[baseball_data$AtBat&gt;250 &amp; baseball_data$HmRun&lt;5, ]
-View(new_baseball)</code></pre>
+View(new_baseball)
+
+# After observing this graph, I see there are columns for &#39;Hits&#39; and &#39;AtBats&#39;, but no batting average column. This is a good opportunity to calculate batting average (Hits / AtBats), and create a new column that represents it on our data structure
+baseball_data$batting_avg &lt;- ((baseball_data$Hits)/(baseball_data$AtBat))
+which(colnames(baseball_data) == &quot;batting_avg&quot;)</code></pre>
+<pre><code>## [1] 22</code></pre>
+<pre class="r"><code>bat_avg &lt;- baseball_data[ ,22]
+
+# Removing outliers
+# grep() is being used here to remove an outlier, assuming we know the characters/numbers etc of the
+# data. For the # sake of example, I will remove a case where a hitter had not enough at-bats (19) for 
+# me to feel confident in their data. 
+badid &lt;- grep(&#39;65&#39;, baseball_data$subject_id)
+baseball_data_sub &lt;- baseball_data[-badid,]
+View(baseball_data_sub)</code></pre>
+</div>
+<div id="thankfully-baseball-has-become-a-very-data-oriented-game-in-the-past-decade.-this-allows-us-to-have-descriptive-equations-or-statistics-that-can-be-easily-visualized.-lets-find-a-different-baseball-dat-set-online-to-practice-on." class="section level5">
+<h5>Thankfully, baseball has become a very data-oriented game in the
+past decade. This allows us to have descriptive equations or statistics
+that can be easily visualized. Let’s find a different baseball dat set
+online to practice on.</h5>
+<pre class="r"><code># download new data set. There are two csv files I will be looking at. One will be hitting stats from the 
+# postseason in the past half-century for all players that played in the playoffs, as well as another 
+# data set that contains pitching stats. Let&#39;s se what we can learn!
+hitting_data &lt;- read.csv(&quot;BattingPost.csv&quot;)
+
+# This is clearly too much, so let&#39;s just extract the last three years, 2012-2015 (info only kept until 
+# 2015)
+new_hitting &lt;- hitting_data[hitting_data$yearID &gt; 2012, ]
+str(new_hitting)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    1180 obs. of  22 variables:
+##  $ yearID  : int  2013 2013 2013 2013 2013 2013 2013 2013 2013 2013 ...
+##  $ round   : chr  &quot;ALCS&quot; &quot;ALCS&quot; &quot;ALCS&quot; &quot;ALCS&quot; ...
+##  $ playerID: chr  &quot;albural01&quot; &quot;avilaal01&quot; &quot;benoijo01&quot; &quot;berryqu01&quot; ...
+##  $ teamID  : chr  &quot;DET&quot; &quot;DET&quot; &quot;DET&quot; &quot;BOS&quot; ...
+##  $ lgID    : chr  &quot;AL&quot; &quot;AL&quot; &quot;AL&quot; &quot;AL&quot; ...
+##  $ G       : int  6 6 3 1 4 4 2 6 3 4 ...
+##  $ AB      : int  0 16 0 0 6 0 0 22 5 0 ...
+##  $ R       : int  0 2 0 0 4 0 0 3 0 0 ...
+##  $ H       : int  0 3 0 0 3 0 0 6 0 0 ...
+##  $ X2B     : int  0 0 0 0 3 0 0 0 0 0 ...
+##  $ X3B     : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ HR      : int  0 1 0 0 0 0 0 1 0 0 ...
+##  $ RBI     : int  0 3 0 0 0 0 0 4 0 0 ...
+##  $ SB      : int  0 0 0 1 0 0 0 1 0 0 ...
+##  $ CS      : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ BB      : int  0 4 0 0 3 0 0 2 0 0 ...
+##  $ SO      : int  0 6 0 0 1 0 0 7 2 0 ...
+##  $ IBB     : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ HBP     : int  NA 1 NA NA NA NA NA NA NA NA ...
+##  $ SH      : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ SF      : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ GIDP    : int  NA NA NA NA NA NA NA 1 1 NA ...</code></pre>
+<pre class="r"><code># Now, let&#39;s use the info given in the columns to create a new column for &#39;slugging percentage&#39; a 
+# baseball stat that is meant to reflect how damging it is when a player does get a hit. For example, 
+# Barry Bonds had a high Slugging percentage because he did damage much of the time when we successfully 
+# got a hit. I&#39;ll give you a hint; Barry did not like hitting singles!
+# 
+# Per the MLB website, the formula for slugging percentage is: (1B + 2Bx2 + 3Bx3 + HRx4)/AB. 
+new_hitting$slugging &lt;- (((new_hitting$H) + ((new_hitting$X2B)*2) + ((new_hitting$X3B)*3) + ((new_hitting$HR)*4)) / new_hitting$AB)
+View(new_hitting)
+
+# After observing how many NAs were in my new slugging column, I will remove them so we just have cases where sluging is available.
+noNA_slug &lt;- subset(new_hitting, !is.na(new_hitting$slugging))
+View(noNA_slug)</code></pre>
+</div>
+<div id="during-session-reflection" class="section level3">
+<h3>DURING-Session REFLECTION</h3>
+<div id="section" class="section level5">
+<h5></h5>
+</div>
+</div>
+<div id="post-session-reflection" class="section level3">
+<h3>POST-Session REFLECTION</h3>
+<div id="tbd.." class="section level5">
+<h5>TBD..</h5>
+</div>
 </div>
 </div>
 

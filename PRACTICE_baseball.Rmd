@@ -26,7 +26,7 @@ View(baseball_data)
 ```
 
 ## Import from URL
-```{r import url, echo=T, warning=FALSE, include=T}
+```{r import url, echo=T, warning=FALSE, message=FALSE, include=T}
 library(utils)
 
 # assign a variable to your url for future ref
@@ -60,5 +60,48 @@ View(noNA_baseball)
 # Let's combine these two conditions for our next subset, just to show how specialized you can make your calls for subsetting
 new_baseball <- baseball_data[baseball_data$AtBat>250 & baseball_data$HmRun<5, ]
 View(new_baseball)
+
+# After observing this graph, I see there are columns for 'Hits' and 'AtBats', but no batting average column. This is a good opportunity to calculate batting average (Hits / AtBats), and create a new column that represents it on our data structure
+baseball_data$batting_avg <- ((baseball_data$Hits)/(baseball_data$AtBat))
+which(colnames(baseball_data) == "batting_avg")
+bat_avg <- baseball_data[ ,22]
+
+# Removing outliers
+# grep() is being used here to remove an outlier, assuming we know the characters/numbers etc of the
+# data. For the # sake of example, I will remove a case where a hitter had not enough at-bats (19) for 
+# me to feel confident in their data. 
+badid <- grep('65', baseball_data$subject_id)
+baseball_data_sub <- baseball_data[-badid,]
+View(baseball_data_sub)
 ```
 
+##### Thankfully, baseball has become a very data-oriented game in the past decade. This allows us to have descriptive equations or statistics that can be easily visualized. Let's find a different baseball dat set online to practice on.
+```{r more explore, include=T, echo=T}
+# download new data set. There are two csv files I will be looking at. One will be hitting stats from the 
+# postseason in the past half-century for all players that played in the playoffs, as well as another 
+# data set that contains pitching stats. Let's se what we can learn!
+hitting_data <- read.csv("BattingPost.csv")
+
+# This is clearly too much, so let's just extract the last three years, 2012-2015 (info only kept until 
+# 2015)
+new_hitting <- hitting_data[hitting_data$yearID > 2012, ]
+str(new_hitting)
+
+# Now, let's use the info given in the columns to create a new column for 'slugging percentage' a 
+# baseball stat that is meant to reflect how damging it is when a player does get a hit. For example, 
+# Barry Bonds had a high Slugging percentage because he did damage much of the time when we successfully 
+# got a hit. I'll give you a hint; Barry did not like hitting singles!
+# 
+# Per the MLB website, the formula for slugging percentage is: (1B + 2Bx2 + 3Bx3 + HRx4)/AB. 
+new_hitting$slugging <- (((new_hitting$H) + ((new_hitting$X2B)*2) + ((new_hitting$X3B)*3) + ((new_hitting$HR)*4)) / new_hitting$AB)
+View(new_hitting)
+
+# After observing how many NAs were in my new slugging column, I will remove them so we just have cases where sluging is available.
+noNA_slug <- subset(new_hitting, !is.na(new_hitting$slugging))
+View(noNA_slug)
+```
+
+### DURING-Session REFLECTION
+#####
+### POST-Session REFLECTION
+##### TBD..
