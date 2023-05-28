@@ -1,0 +1,64 @@
+---
+title: "PRACTICE_baseball_data"
+author: "Andrew Crena"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## R Markdown
+##### I prefer to set wd's through the user interface by either using the upper left hand quadrant, or the bottom right.
+```{r setup, include=TRUE, echo=FALSE}
+knitr::opts_chunk$set(root.dir = "C:\\Users\\adcre\\OneDrive\\Documents\\Desktop_RStudio")
+getwd()
+```
+
+## Baseball Data
+##### Example of me importing a baseball data set, cleaning anything that needs it, and performing some exploratory analysis. Hopefully we will be able to use visualization, but my priority with this file is just to practice importing!
+
+## Import from loacal files, still zipped
+```{r from local, include=T, echo=T}
+unzip_baseball <- unzip("C:\\Users\\adcre\\OneDrive\\Documents\\Desktop_RStudio\\baseball_data_zipped.zip")
+baseball_data <- read.csv(unzip_baseball)
+
+View(baseball_data)
+```
+
+## Import from URL
+```{r import url, echo=T, warning=FALSE, include=T}
+library(utils)
+
+# assign a variable to your url for future ref
+url <- "https://www.kaggle.com/datasets/mathchi/hitters-baseball-data/download?datasetVersionNumber=1"
+download.file(url, destfile = "dataset.zip")
+unzpd_baseball <- unzip("dataset.zip")
+baseball_data_url <- read.csv("C:\\Users\\adcre\\OneDrive\\Documents\\Desktop_RStudio\\Hitters.csv")
+
+View(baseball_data_url)
+```
+
+## Clean/Subset
+##### Let's see how we can subset this data. But first, take a look at your variables !
+```{r clean and subset, include=T, echo=T}
+baseball_data <- read.csv("Hitters.csv")
+Column_indexes <- colnames(baseball_data)
+Column_indexes
+
+# It looks like we have to create a subject column, here is one way of doing this
+baseball_data$subject_id <- row.names(baseball_data)
+View(baseball_data)
+
+# Let's subset players with over 200 at-bats
+manyabs_data <- baseball_data[baseball_data$AtBat > 200, ]
+View(manyabs_data)
+
+# After looking through the data, there appears to be some missing values, especially in certain columns. Let's check and make a new variable that has a df only non-NA-containing cases
+noNA_baseball <- subset(baseball_data, !is.na(baseball_data$Salary))
+View(noNA_baseball)
+
+# Let's combine these two conditions for our next subset, just to show how specialized you can make your calls for subsetting
+new_baseball <- baseball_data[baseball_data$AtBat>250 & baseball_data$HmRun<5, ]
+View(new_baseball)
+```
+
